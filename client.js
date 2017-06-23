@@ -40,28 +40,28 @@ module.exports = class GuideBot extends Discord.Client {
         // Here we load **commands** into memory, as a collection, so they're accessible
         // here and everywhere else. 
         const commands = await readdir('./commands/');
-        client.log("log", `Loading a total of ${commands.length} commands.`);
+        this.log("log", `Loading a total of ${commands.length} commands.`);
         commands.forEach(f => {
             try {
             let props = require(`./commands/${f}`);
-            client.log("log", `Loading Command: ${props.help.name}. 👌`);
-            client.commands.set(props.help.name, props);
+            this.log("log", `Loading Command: ${props.help.name}. 👌`);
+            this.commands.set(props.help.name, props);
             props.conf.aliases.forEach(alias => {
-                client.aliases.set(alias, props.help.name);
+                this.aliases.set(alias, props.help.name);
             });
             } catch (e) {
-            client.log(`Unable to load command ${f}: ${e}`);
+                this.log(`Unable to load command ${f}: ${e}`);
             }
         });
 
         // Then we load events, which will include our message and ready event.
         const events = await readdir('./events/')
-        client.log("log", `Loading a total of ${events.length} events.`);
+        this.log("log", `Loading a total of ${events.length} events.`);
         events.forEach(file => {
             const eventName = file.split(".")[0];
             const event = require(`./events/${file}`);
             // This line is awesome by the way. Just sayin'.
-            this.on(eventName, event.bind(null, client));
+            this.on(eventName, event.bind(null, this));
             delete require.cache[require.resolve(`./events/${file}`)];
         });
 
@@ -83,7 +83,7 @@ module.exports = class GuideBot extends Discord.Client {
         let permlvl = 0;
         
         // If bot owner, return max perm level
-        if(message.author.id === client.config.ownerID) return 10;
+        if(message.author.id === this.config.ownerID) return 10;
         
         // If DMs or webhook, return 0 perm level.
         if(!message.guild || !message.member) return 0;
@@ -91,10 +91,10 @@ module.exports = class GuideBot extends Discord.Client {
         // The rest of the perms rely on roles. If those roles are not found
         // in the config, or the user does not have it, their level will be 0
         try {
-        let modRole = message.guild.roles.find('name', client.config.modRoleName);
-        if (modRole && message.member.roles.has(modRole.id)) permlvl = 2;
-        let adminRole = message.guild.roles.find('name', client.config.adminRoleName);
-        if (adminRole && message.member.roles.has(adminRole.id)) permlvl = 3;
+            let modRole = message.guild.roles.find('name', this.config.modRoleName);
+            if (modRole && message.member.roles.has(modRole.id)) permlvl = 2;
+            let adminRole = message.guild.roles.find('name', this.config.adminRoleName);
+            if (adminRole && message.member.roles.has(adminRole.id)) permlvl = 3;
         } catch (e) {
         // Mod names were not configured.
         permlvl = 0;

@@ -12,11 +12,10 @@ exports.run = async (client, msg, args, level) => {
   const code = args.join(" ");
   try {
       const evaled = eval(code);
-      const clean = await client.clean(client, evaled);
-      msg.channel.send(`\`\`\`xl\n${clean}\n\`\`\``
-      );        
+      const clean = await client.clean(evaled);
+      msg.channel.send(`\`\`\`xl\n${clean}\n\`\`\``);        
   } catch(err) {
-      msg.channel.send(`\`ERROR\` \`\`\`xl\n${await client.clean(client, err)}\n\`\`\``);
+      msg.channel.send(`\`ERROR\` \`\`\`xl\n${await client.clean(err)}\n\`\`\``);
   }
 };
 
