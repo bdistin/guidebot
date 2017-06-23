@@ -55,7 +55,7 @@ module.exports = class GuideBot extends Discord.Client {
         });
 
         // Then we load events, which will include our message and ready event.
-        const events = await readdir('./events/')
+        const events = await readdir('./events/');
         this.log("log", `Loading a total of ${events.length} events.`);
         events.forEach(file => {
             const eventName = file.split(".")[0];
